@@ -17,24 +17,17 @@ var __copyProps = (to, from, except, desc) => {
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// src/utils.ts
-var utils_exports = {};
-__export(utils_exports, {
-  noop: () => noop,
-  shouldThrowError: () => shouldThrowError
+// src/infiniteQueryOptions.ts
+var infiniteQueryOptions_exports = {};
+__export(infiniteQueryOptions_exports, {
+  infiniteQueryOptions: () => infiniteQueryOptions
 });
-module.exports = __toCommonJS(utils_exports);
-function shouldThrowError(throwError, params) {
-  if (typeof throwError === "function") {
-    return throwError(...params);
-  }
-  return !!throwError;
-}
-function noop() {
+module.exports = __toCommonJS(infiniteQueryOptions_exports);
+function infiniteQueryOptions(options) {
+  return options;
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  noop,
-  shouldThrowError
+  infiniteQueryOptions
 });
-//# sourceMappingURL=utils.cjs.map
+//# sourceMappingURL=infiniteQueryOptions.cjs.map

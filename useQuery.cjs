@@ -1,4 +1,5 @@
 "use strict";
+"use client";
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
@@ -17,24 +18,19 @@ var __copyProps = (to, from, except, desc) => {
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// src/utils.ts
-var utils_exports = {};
-__export(utils_exports, {
-  noop: () => noop,
-  shouldThrowError: () => shouldThrowError
+// src/useQuery.ts
+var useQuery_exports = {};
+__export(useQuery_exports, {
+  useQuery: () => useQuery
 });
-module.exports = __toCommonJS(utils_exports);
-function shouldThrowError(throwError, params) {
-  if (typeof throwError === "function") {
-    return throwError(...params);
-  }
-  return !!throwError;
-}
-function noop() {
+module.exports = __toCommonJS(useQuery_exports);
+var import_query_core = require("@tanstack/query-core");
+var import_useBaseQuery = require("./useBaseQuery.cjs");
+function useQuery(options, queryClient) {
+  return (0, import_useBaseQuery.useBaseQuery)(options, import_query_core.QueryObserver, queryClient);
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  noop,
-  shouldThrowError
+  useQuery
 });
-//# sourceMappingURL=utils.cjs.map
+//# sourceMappingURL=useQuery.cjs.map

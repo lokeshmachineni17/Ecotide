@@ -17,24 +17,21 @@ var __copyProps = (to, from, except, desc) => {
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// src/utils.ts
-var utils_exports = {};
-__export(utils_exports, {
-  noop: () => noop,
-  shouldThrowError: () => shouldThrowError
+// src/usePrefetchQuery.tsx
+var usePrefetchQuery_exports = {};
+__export(usePrefetchQuery_exports, {
+  usePrefetchQuery: () => usePrefetchQuery
 });
-module.exports = __toCommonJS(utils_exports);
-function shouldThrowError(throwError, params) {
-  if (typeof throwError === "function") {
-    return throwError(...params);
+module.exports = __toCommonJS(usePrefetchQuery_exports);
+var import_QueryClientProvider = require("./QueryClientProvider.cjs");
+function usePrefetchQuery(options, queryClient) {
+  const client = (0, import_QueryClientProvider.useQueryClient)(queryClient);
+  if (!client.getQueryState(options.queryKey)) {
+    client.prefetchQuery(options);
   }
-  return !!throwError;
-}
-function noop() {
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  noop,
-  shouldThrowError
+  usePrefetchQuery
 });
-//# sourceMappingURL=utils.cjs.map
+//# sourceMappingURL=usePrefetchQuery.cjs.map
