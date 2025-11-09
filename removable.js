@@ -1,25 +1,16 @@
-import {
-  __privateAdd,
-  __privateGet,
-  __privateSet
-} from "./chunk-2HYBKCYP.js";
-
 // src/removable.ts
 import { isServer, isValidTimeout } from "./utils.js";
-var _gcTimeout;
 var Removable = class {
-  constructor() {
-    __privateAdd(this, _gcTimeout, void 0);
-  }
+  #gcTimeout;
   destroy() {
     this.clearGcTimeout();
   }
   scheduleGc() {
     this.clearGcTimeout();
     if (isValidTimeout(this.gcTime)) {
-      __privateSet(this, _gcTimeout, setTimeout(() => {
+      this.#gcTimeout = setTimeout(() => {
         this.optionalRemove();
-      }, this.gcTime));
+      }, this.gcTime);
     }
   }
   updateGcTime(newGcTime) {
@@ -29,13 +20,12 @@ var Removable = class {
     );
   }
   clearGcTimeout() {
-    if (__privateGet(this, _gcTimeout)) {
-      clearTimeout(__privateGet(this, _gcTimeout));
-      __privateSet(this, _gcTimeout, void 0);
+    if (this.#gcTimeout) {
+      clearTimeout(this.#gcTimeout);
+      this.#gcTimeout = void 0;
     }
   }
 };
-_gcTimeout = new WeakMap();
 export {
   Removable
 };
