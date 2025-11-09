@@ -1,61 +1,34 @@
 {
-  "name": "@tanstack/react-query",
-  "version": "5.60.5",
-  "description": "Hooks for managing, caching and syncing asynchronous and remote data in React",
-  "author": "tannerlinsley",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/TanStack/query.git",
-    "directory": "packages/react-query"
-  },
-  "homepage": "https://tanstack.com/query",
-  "funding": {
-    "type": "github",
-    "url": "https://github.com/sponsors/tannerlinsley"
-  },
-  "type": "module",
-  "types": "build/legacy/index.d.ts",
-  "main": "build/legacy/index.cjs",
-  "module": "build/legacy/index.js",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./build/modern/index.d.ts",
-        "default": "./build/modern/index.js"
-      },
-      "require": {
-        "types": "./build/modern/index.d.cts",
-        "default": "./build/modern/index.cjs"
-      }
-    },
-    "./package.json": "./package.json"
-  },
-  "sideEffects": false,
+  "name": "caniuse-lite",
+  "version": "1.0.30001677",
+  "description": "A smaller version of caniuse-db, with only the essentials!",
+  "main": "dist/unpacker/index.js",
   "files": [
-    "build",
-    "src",
-    "!src/__tests__",
-    "!build/codemods/node_modules",
-    "!build/codemods/vite.config.ts",
-    "!build/codemods/**/__testfixtures__",
-    "!build/codemods/**/__tests__"
+    "data",
+    "dist"
   ],
-  "dependencies": {
-    "@tanstack/query-core": "5.60.5"
+  "keywords": [
+    "support"
+  ],
+  "author": {
+    "name": "Ben Briggs",
+    "email": "beneb.info@gmail.com",
+    "url": "http://beneb.info"
   },
-  "devDependencies": {
-    "@types/react": "npm:types-react@rc",
-    "@types/react-dom": "npm:types-react-dom@rc",
-    "@vitejs/plugin-react": "^4.3.1",
-    "eslint-plugin-react-compiler": "0.0.0-experimental-f8a5409-20240829",
-    "react": "19.0.0-rc-4c2e457c7c-20240522",
-    "react-dom": "19.0.0-rc-4c2e457c7c-20240522",
-    "react-error-boundary": "^4.0.13",
-    "@tanstack/query-persist-client-core": "5.60.5"
-  },
-  "peerDependencies": {
-    "react": "^18 || ^19"
-  },
-  "scripts": {}
+  "repository": "browserslist/caniuse-lite",
+  "funding": [
+    {
+      "type": "opencollective",
+      "url": "https://opencollective.com/browserslist"
+    },
+    {
+      "type": "tidelift",
+      "url": "https://tidelift.com/funding/github/npm/caniuse-lite"
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/ai"
+    }
+  ],
+  "license": "CC-BY-4.0"
 }
