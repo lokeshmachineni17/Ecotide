@@ -1,3 +1,5 @@
+import "./chunk-2HYBKCYP.js";
+
 // src/subscribable.ts
 var Subscribable = class {
   constructor() {

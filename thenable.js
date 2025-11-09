@@ -1,3 +1,5 @@
+import "./chunk-2HYBKCYP.js";
+
 // src/thenable.ts
 function pendingThenable() {
   let resolve;

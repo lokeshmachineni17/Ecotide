@@ -1,15 +1,22 @@
+import {
+  __privateAdd,
+  __privateGet,
+  __privateSet
+} from "./chunk-2HYBKCYP.js";
+
 // src/queryCache.ts
 import { hashQueryKeyByOptions, matchQuery } from "./utils.js";
 import { Query } from "./query.js";
 import { notifyManager } from "./notifyManager.js";
 import { Subscribable } from "./subscribable.js";
+var _queries;
 var QueryCache = class extends Subscribable {
   constructor(config = {}) {
     super();
     this.config = config;
-    this.#queries = /* @__PURE__ */ new Map();
+    __privateAdd(this, _queries, void 0);
+    __privateSet(this, _queries, /* @__PURE__ */ new Map());
   }
-  #queries;
   build(client, options, state) {
     const queryKey = options.queryKey;
     const queryHash = options.queryHash ?? hashQueryKeyByOptions(queryKey, options);
@@ -28,8 +35,8 @@ var QueryCache = class extends Subscribable {
     return query;
   }
   add(query) {
-    if (!this.#queries.has(query.queryHash)) {
-      this.#queries.set(query.queryHash, query);
+    if (!__privateGet(this, _queries).has(query.queryHash)) {
+      __privateGet(this, _queries).set(query.queryHash, query);
       this.notify({
         type: "added",
         query
@@ -37,11 +44,11 @@ var QueryCache = class extends Subscribable {
     }
   }
   remove(query) {
-    const queryInMap = this.#queries.get(query.queryHash);
+    const queryInMap = __privateGet(this, _queries).get(query.queryHash);
     if (queryInMap) {
       query.destroy();
       if (queryInMap === query) {
-        this.#queries.delete(query.queryHash);
+        __privateGet(this, _queries).delete(query.queryHash);
       }
       this.notify({ type: "removed", query });
     }
@@ -54,10 +61,10 @@ var QueryCache = class extends Subscribable {
     });
   }
   get(queryHash) {
-    return this.#queries.get(queryHash);
+    return __privateGet(this, _queries).get(queryHash);
   }
   getAll() {
-    return [...this.#queries.values()];
+    return [...__privateGet(this, _queries).values()];
   }
   find(filters) {
     const defaultedFilters = { exact: true, ...filters };
@@ -91,6 +98,7 @@ var QueryCache = class extends Subscribable {
     });
   }
 };
+_queries = new WeakMap();
 export {
   QueryCache
 };

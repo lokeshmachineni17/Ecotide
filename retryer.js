@@ -1,3 +1,5 @@
+import "./chunk-2HYBKCYP.js";
+
 // src/retryer.ts
 import { focusManager } from "./focusManager.js";
 import { onlineManager } from "./onlineManager.js";
@@ -12,8 +14,8 @@ function canFetch(networkMode) {
 var CancelledError = class extends Error {
   constructor(options) {
     super("CancelledError");
-    this.revert = options?.revert;
-    this.silent = options?.silent;
+    this.revert = options == null ? void 0 : options.revert;
+    this.silent = options == null ? void 0 : options.silent;
   }
 };
 function isCancelledError(value) {
@@ -26,9 +28,10 @@ function createRetryer(config) {
   let continueFn;
   const thenable = pendingThenable();
   const cancel = (cancelOptions) => {
+    var _a;
     if (!isResolved) {
       reject(new CancelledError(cancelOptions));
-      config.abort?.();
+      (_a = config.abort) == null ? void 0 : _a.call(config);
     }
   };
   const cancelRetry = () => {
@@ -40,33 +43,37 @@ function createRetryer(config) {
   const canContinue = () => focusManager.isFocused() && (config.networkMode === "always" || onlineManager.isOnline()) && config.canRun();
   const canStart = () => canFetch(config.networkMode) && config.canRun();
   const resolve = (value) => {
+    var _a;
     if (!isResolved) {
       isResolved = true;
-      config.onSuccess?.(value);
-      continueFn?.();
+      (_a = config.onSuccess) == null ? void 0 : _a.call(config, value);
+      continueFn == null ? void 0 : continueFn();
       thenable.resolve(value);
     }
   };
   const reject = (value) => {
+    var _a;
     if (!isResolved) {
       isResolved = true;
-      config.onError?.(value);
-      continueFn?.();
+      (_a = config.onError) == null ? void 0 : _a.call(config, value);
+      continueFn == null ? void 0 : continueFn();
       thenable.reject(value);
     }
   };
   const pause = () => {
     return new Promise((continueResolve) => {
+      var _a;
       continueFn = (value) => {
         if (isResolved || canContinue()) {
           continueResolve(value);
         }
       };
-      config.onPause?.();
+      (_a = config.onPause) == null ? void 0 : _a.call(config);
     }).then(() => {
+      var _a;
       continueFn = void 0;
       if (!isResolved) {
-        config.onContinue?.();
+        (_a = config.onContinue) == null ? void 0 : _a.call(config);
       }
     });
   };
@@ -82,6 +89,7 @@ function createRetryer(config) {
       promiseOrValue = Promise.reject(error);
     }
     Promise.resolve(promiseOrValue).then(resolve).catch((error) => {
+      var _a;
       if (isResolved) {
         return;
       }
@@ -94,7 +102,7 @@ function createRetryer(config) {
         return;
       }
       failureCount++;
-      config.onFail?.(failureCount, error);
+      (_a = config.onFail) == null ? void 0 : _a.call(config, failureCount, error);
       sleep(delay).then(() => {
         return canContinue() ? void 0 : pause();
       }).then(() => {
@@ -110,7 +118,7 @@ function createRetryer(config) {
     promise: thenable,
     cancel,
     continue: () => {
-      continueFn?.();
+      continueFn == null ? void 0 : continueFn();
       return thenable;
     },
     cancelRetry,
