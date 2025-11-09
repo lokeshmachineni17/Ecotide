@@ -1,3 +1,5 @@
+import "./chunk-2HYBKCYP.js";
+
 // src/notifyManager.ts
 function createNotifyManager() {
   let queue = [];

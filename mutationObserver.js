@@ -1,100 +1,123 @@
+import {
+  __privateAdd,
+  __privateGet,
+  __privateMethod,
+  __privateSet
+} from "./chunk-2HYBKCYP.js";
+
 // src/mutationObserver.ts
 import { getDefaultState } from "./mutation.js";
 import { notifyManager } from "./notifyManager.js";
 import { Subscribable } from "./subscribable.js";
 import { hashKey, shallowEqualObjects } from "./utils.js";
+var _client, _currentResult, _currentMutation, _mutateOptions, _updateResult, updateResult_fn, _notify, notify_fn;
 var MutationObserver = class extends Subscribable {
-  #client;
-  #currentResult = void 0;
-  #currentMutation;
-  #mutateOptions;
   constructor(client, options) {
     super();
-    this.#client = client;
+    __privateAdd(this, _updateResult);
+    __privateAdd(this, _notify);
+    __privateAdd(this, _client, void 0);
+    __privateAdd(this, _currentResult, void 0);
+    __privateAdd(this, _currentMutation, void 0);
+    __privateAdd(this, _mutateOptions, void 0);
+    __privateSet(this, _client, client);
     this.setOptions(options);
     this.bindMethods();
-    this.#updateResult();
+    __privateMethod(this, _updateResult, updateResult_fn).call(this);
   }
   bindMethods() {
     this.mutate = this.mutate.bind(this);
     this.reset = this.reset.bind(this);
   }
   setOptions(options) {
+    var _a;
     const prevOptions = this.options;
-    this.options = this.#client.defaultMutationOptions(options);
+    this.options = __privateGet(this, _client).defaultMutationOptions(options);
     if (!shallowEqualObjects(this.options, prevOptions)) {
-      this.#client.getMutationCache().notify({
+      __privateGet(this, _client).getMutationCache().notify({
         type: "observerOptionsUpdated",
-        mutation: this.#currentMutation,
+        mutation: __privateGet(this, _currentMutation),
         observer: this
       });
     }
-    if (prevOptions?.mutationKey && this.options.mutationKey && hashKey(prevOptions.mutationKey) !== hashKey(this.options.mutationKey)) {
+    if ((prevOptions == null ? void 0 : prevOptions.mutationKey) && this.options.mutationKey && hashKey(prevOptions.mutationKey) !== hashKey(this.options.mutationKey)) {
       this.reset();
-    } else if (this.#currentMutation?.state.status === "pending") {
-      this.#currentMutation.setOptions(this.options);
+    } else if (((_a = __privateGet(this, _currentMutation)) == null ? void 0 : _a.state.status) === "pending") {
+      __privateGet(this, _currentMutation).setOptions(this.options);
     }
   }
   onUnsubscribe() {
+    var _a;
     if (!this.hasListeners()) {
-      this.#currentMutation?.removeObserver(this);
+      (_a = __privateGet(this, _currentMutation)) == null ? void 0 : _a.removeObserver(this);
     }
   }
   onMutationUpdate(action) {
-    this.#updateResult();
-    this.#notify(action);
+    __privateMethod(this, _updateResult, updateResult_fn).call(this);
+    __privateMethod(this, _notify, notify_fn).call(this, action);
   }
   getCurrentResult() {
-    return this.#currentResult;
+    return __privateGet(this, _currentResult);
   }
   reset() {
-    this.#currentMutation?.removeObserver(this);
-    this.#currentMutation = void 0;
-    this.#updateResult();
-    this.#notify();
+    var _a;
+    (_a = __privateGet(this, _currentMutation)) == null ? void 0 : _a.removeObserver(this);
+    __privateSet(this, _currentMutation, void 0);
+    __privateMethod(this, _updateResult, updateResult_fn).call(this);
+    __privateMethod(this, _notify, notify_fn).call(this);
   }
   mutate(variables, options) {
-    this.#mutateOptions = options;
-    this.#currentMutation?.removeObserver(this);
-    this.#currentMutation = this.#client.getMutationCache().build(this.#client, this.options);
-    this.#currentMutation.addObserver(this);
-    return this.#currentMutation.execute(variables);
+    var _a;
+    __privateSet(this, _mutateOptions, options);
+    (_a = __privateGet(this, _currentMutation)) == null ? void 0 : _a.removeObserver(this);
+    __privateSet(this, _currentMutation, __privateGet(this, _client).getMutationCache().build(__privateGet(this, _client), this.options));
+    __privateGet(this, _currentMutation).addObserver(this);
+    return __privateGet(this, _currentMutation).execute(variables);
   }
-  #updateResult() {
-    const state = this.#currentMutation?.state ?? getDefaultState();
-    this.#currentResult = {
-      ...state,
-      isPending: state.status === "pending",
-      isSuccess: state.status === "success",
-      isError: state.status === "error",
-      isIdle: state.status === "idle",
-      mutate: this.mutate,
-      reset: this.reset
-    };
-  }
-  #notify(action) {
-    notifyManager.batch(() => {
-      if (this.#mutateOptions && this.hasListeners()) {
-        const variables = this.#currentResult.variables;
-        const context = this.#currentResult.context;
-        if (action?.type === "success") {
-          this.#mutateOptions.onSuccess?.(action.data, variables, context);
-          this.#mutateOptions.onSettled?.(action.data, null, variables, context);
-        } else if (action?.type === "error") {
-          this.#mutateOptions.onError?.(action.error, variables, context);
-          this.#mutateOptions.onSettled?.(
-            void 0,
-            action.error,
-            variables,
-            context
-          );
-        }
+};
+_client = new WeakMap();
+_currentResult = new WeakMap();
+_currentMutation = new WeakMap();
+_mutateOptions = new WeakMap();
+_updateResult = new WeakSet();
+updateResult_fn = function() {
+  var _a;
+  const state = ((_a = __privateGet(this, _currentMutation)) == null ? void 0 : _a.state) ?? getDefaultState();
+  __privateSet(this, _currentResult, {
+    ...state,
+    isPending: state.status === "pending",
+    isSuccess: state.status === "success",
+    isError: state.status === "error",
+    isIdle: state.status === "idle",
+    mutate: this.mutate,
+    reset: this.reset
+  });
+};
+_notify = new WeakSet();
+notify_fn = function(action) {
+  notifyManager.batch(() => {
+    var _a, _b, _c, _d, _e, _f, _g, _h;
+    if (__privateGet(this, _mutateOptions) && this.hasListeners()) {
+      const variables = __privateGet(this, _currentResult).variables;
+      const context = __privateGet(this, _currentResult).context;
+      if ((action == null ? void 0 : action.type) === "success") {
+        (_b = (_a = __privateGet(this, _mutateOptions)).onSuccess) == null ? void 0 : _b.call(_a, action.data, variables, context);
+        (_d = (_c = __privateGet(this, _mutateOptions)).onSettled) == null ? void 0 : _d.call(_c, action.data, null, variables, context);
+      } else if ((action == null ? void 0 : action.type) === "error") {
+        (_f = (_e = __privateGet(this, _mutateOptions)).onError) == null ? void 0 : _f.call(_e, action.error, variables, context);
+        (_h = (_g = __privateGet(this, _mutateOptions)).onSettled) == null ? void 0 : _h.call(
+          _g,
+          void 0,
+          action.error,
+          variables,
+          context
+        );
       }
-      this.listeners.forEach((listener) => {
-        listener(this.#currentResult);
-      });
+    }
+    this.listeners.forEach((listener) => {
+      listener(__privateGet(this, _currentResult));
     });
-  }
+  });
 };
 export {
   MutationObserver

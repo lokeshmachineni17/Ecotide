@@ -29,10 +29,11 @@ var import_utils = require("./utils.cjs");
 function infiniteQueryBehavior(pages) {
   return {
     onFetch: (context, query) => {
+      var _a, _b, _c, _d, _e;
       const options = context.options;
-      const direction = context.fetchOptions?.meta?.fetchMore?.direction;
-      const oldPages = context.state.data?.pages || [];
-      const oldPageParams = context.state.data?.pageParams || [];
+      const direction = (_c = (_b = (_a = context.fetchOptions) == null ? void 0 : _a.meta) == null ? void 0 : _b.fetchMore) == null ? void 0 : _c.direction;
+      const oldPages = ((_d = context.state.data) == null ? void 0 : _d.pages) || [];
+      const oldPageParams = ((_e = context.state.data) == null ? void 0 : _e.pageParams) || [];
       let result = { pages: [], pageParams: [] };
       let currentPage = 0;
       const fetchFn = async () => {
@@ -101,7 +102,9 @@ function infiniteQueryBehavior(pages) {
       };
       if (context.options.persister) {
         context.fetchFn = () => {
-          return context.options.persister?.(
+          var _a2, _b2;
+          return (_b2 = (_a2 = context.options).persister) == null ? void 0 : _b2.call(
+            _a2,
             fetchFn,
             {
               queryKey: context.queryKey,
@@ -127,7 +130,8 @@ function getNextPageParam(options, { pages, pageParams }) {
   ) : void 0;
 }
 function getPreviousPageParam(options, { pages, pageParams }) {
-  return pages.length > 0 ? options.getPreviousPageParam?.(pages[0], pages, pageParams[0], pageParams) : void 0;
+  var _a;
+  return pages.length > 0 ? (_a = options.getPreviousPageParam) == null ? void 0 : _a.call(options, pages[0], pages, pageParams[0], pageParams) : void 0;
 }
 function hasNextPage(options, data) {
   if (!data)

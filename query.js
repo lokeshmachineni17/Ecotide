@@ -1,3 +1,10 @@
+import {
+  __privateAdd,
+  __privateGet,
+  __privateMethod,
+  __privateSet
+} from "./chunk-2HYBKCYP.js";
+
 // src/query.ts
 import {
   ensureQueryFn,
@@ -10,57 +17,61 @@ import {
 import { notifyManager } from "./notifyManager.js";
 import { canFetch, createRetryer, isCancelledError } from "./retryer.js";
 import { Removable } from "./removable.js";
+var _initialState, _revertState, _cache, _retryer, _defaultOptions, _abortSignalConsumed, _dispatch, dispatch_fn;
 var Query = class extends Removable {
-  #initialState;
-  #revertState;
-  #cache;
-  #retryer;
-  #defaultOptions;
-  #abortSignalConsumed;
   constructor(config) {
     super();
-    this.#abortSignalConsumed = false;
-    this.#defaultOptions = config.defaultOptions;
+    __privateAdd(this, _dispatch);
+    __privateAdd(this, _initialState, void 0);
+    __privateAdd(this, _revertState, void 0);
+    __privateAdd(this, _cache, void 0);
+    __privateAdd(this, _retryer, void 0);
+    __privateAdd(this, _defaultOptions, void 0);
+    __privateAdd(this, _abortSignalConsumed, void 0);
+    __privateSet(this, _abortSignalConsumed, false);
+    __privateSet(this, _defaultOptions, config.defaultOptions);
     this.setOptions(config.options);
     this.observers = [];
-    this.#cache = config.cache;
+    __privateSet(this, _cache, config.cache);
     this.queryKey = config.queryKey;
     this.queryHash = config.queryHash;
-    this.#initialState = getDefaultState(this.options);
-    this.state = config.state ?? this.#initialState;
+    __privateSet(this, _initialState, getDefaultState(this.options));
+    this.state = config.state ?? __privateGet(this, _initialState);
     this.scheduleGc();
   }
   get meta() {
     return this.options.meta;
   }
   get promise() {
-    return this.#retryer?.promise;
+    var _a;
+    return (_a = __privateGet(this, _retryer)) == null ? void 0 : _a.promise;
   }
   setOptions(options) {
-    this.options = { ...this.#defaultOptions, ...options };
+    this.options = { ...__privateGet(this, _defaultOptions), ...options };
     this.updateGcTime(this.options.gcTime);
   }
   optionalRemove() {
     if (!this.observers.length && this.state.fetchStatus === "idle") {
-      this.#cache.remove(this);
+      __privateGet(this, _cache).remove(this);
     }
   }
   setData(newData, options) {
     const data = replaceData(this.state.data, newData, this.options);
-    this.#dispatch({
+    __privateMethod(this, _dispatch, dispatch_fn).call(this, {
       data,
       type: "success",
-      dataUpdatedAt: options?.updatedAt,
-      manual: options?.manual
+      dataUpdatedAt: options == null ? void 0 : options.updatedAt,
+      manual: options == null ? void 0 : options.manual
     });
     return data;
   }
   setState(state, setStateOptions) {
-    this.#dispatch({ type: "setState", state, setStateOptions });
+    __privateMethod(this, _dispatch, dispatch_fn).call(this, { type: "setState", state, setStateOptions });
   }
   cancel(options) {
-    const promise = this.#retryer?.promise;
-    this.#retryer?.cancel(options);
+    var _a, _b;
+    const promise = (_a = __privateGet(this, _retryer)) == null ? void 0 : _a.promise;
+    (_b = __privateGet(this, _retryer)) == null ? void 0 : _b.cancel(options);
     return promise ? promise.then(noop).catch(noop) : Promise.resolve();
   }
   destroy() {
@@ -69,7 +80,7 @@ var Query = class extends Removable {
   }
   reset() {
     this.destroy();
-    this.setState(this.#initialState);
+    this.setState(__privateGet(this, _initialState));
   }
   isActive() {
     return this.observers.some(
@@ -97,36 +108,38 @@ var Query = class extends Removable {
     return this.state.isInvalidated || this.state.data === void 0 || !timeUntilStale(this.state.dataUpdatedAt, staleTime);
   }
   onFocus() {
+    var _a;
     const observer = this.observers.find((x) => x.shouldFetchOnWindowFocus());
-    observer?.refetch({ cancelRefetch: false });
-    this.#retryer?.continue();
+    observer == null ? void 0 : observer.refetch({ cancelRefetch: false });
+    (_a = __privateGet(this, _retryer)) == null ? void 0 : _a.continue();
   }
   onOnline() {
+    var _a;
     const observer = this.observers.find((x) => x.shouldFetchOnReconnect());
-    observer?.refetch({ cancelRefetch: false });
-    this.#retryer?.continue();
+    observer == null ? void 0 : observer.refetch({ cancelRefetch: false });
+    (_a = __privateGet(this, _retryer)) == null ? void 0 : _a.continue();
   }
   addObserver(observer) {
     if (!this.observers.includes(observer)) {
       this.observers.push(observer);
       this.clearGcTimeout();
-      this.#cache.notify({ type: "observerAdded", query: this, observer });
+      __privateGet(this, _cache).notify({ type: "observerAdded", query: this, observer });
     }
   }
   removeObserver(observer) {
     if (this.observers.includes(observer)) {
       this.observers = this.observers.filter((x) => x !== observer);
       if (!this.observers.length) {
-        if (this.#retryer) {
-          if (this.#abortSignalConsumed) {
-            this.#retryer.cancel({ revert: true });
+        if (__privateGet(this, _retryer)) {
+          if (__privateGet(this, _abortSignalConsumed)) {
+            __privateGet(this, _retryer).cancel({ revert: true });
           } else {
-            this.#retryer.cancelRetry();
+            __privateGet(this, _retryer).cancelRetry();
           }
         }
         this.scheduleGc();
       }
-      this.#cache.notify({ type: "observerRemoved", query: this, observer });
+      __privateGet(this, _cache).notify({ type: "observerRemoved", query: this, observer });
     }
   }
   getObserversCount() {
@@ -134,16 +147,17 @@ var Query = class extends Removable {
   }
   invalidate() {
     if (!this.state.isInvalidated) {
-      this.#dispatch({ type: "invalidate" });
+      __privateMethod(this, _dispatch, dispatch_fn).call(this, { type: "invalidate" });
     }
   }
   fetch(options, fetchOptions) {
+    var _a, _b, _c;
     if (this.state.fetchStatus !== "idle") {
-      if (this.state.data !== void 0 && fetchOptions?.cancelRefetch) {
+      if (this.state.data !== void 0 && (fetchOptions == null ? void 0 : fetchOptions.cancelRefetch)) {
         this.cancel({ silent: true });
-      } else if (this.#retryer) {
-        this.#retryer.continueRetry();
-        return this.#retryer.promise;
+      } else if (__privateGet(this, _retryer)) {
+        __privateGet(this, _retryer).continueRetry();
+        return __privateGet(this, _retryer).promise;
       }
     }
     if (options) {
@@ -167,7 +181,7 @@ var Query = class extends Removable {
       Object.defineProperty(object, "signal", {
         enumerable: true,
         get: () => {
-          this.#abortSignalConsumed = true;
+          __privateSet(this, _abortSignalConsumed, true);
           return abortController.signal;
         }
       });
@@ -179,7 +193,7 @@ var Query = class extends Removable {
         meta: this.meta
       };
       addSignalProperty(queryFnContext);
-      this.#abortSignalConsumed = false;
+      __privateSet(this, _abortSignalConsumed, false);
       if (this.options.persister) {
         return this.options.persister(
           queryFn,
@@ -197,27 +211,30 @@ var Query = class extends Removable {
       fetchFn
     };
     addSignalProperty(context);
-    this.options.behavior?.onFetch(
+    (_a = this.options.behavior) == null ? void 0 : _a.onFetch(
       context,
       this
     );
-    this.#revertState = this.state;
-    if (this.state.fetchStatus === "idle" || this.state.fetchMeta !== context.fetchOptions?.meta) {
-      this.#dispatch({ type: "fetch", meta: context.fetchOptions?.meta });
+    __privateSet(this, _revertState, this.state);
+    if (this.state.fetchStatus === "idle" || this.state.fetchMeta !== ((_b = context.fetchOptions) == null ? void 0 : _b.meta)) {
+      __privateMethod(this, _dispatch, dispatch_fn).call(this, { type: "fetch", meta: (_c = context.fetchOptions) == null ? void 0 : _c.meta });
     }
     const onError = (error) => {
+      var _a2, _b2, _c2, _d;
       if (!(isCancelledError(error) && error.silent)) {
-        this.#dispatch({
+        __privateMethod(this, _dispatch, dispatch_fn).call(this, {
           type: "error",
           error
         });
       }
       if (!isCancelledError(error)) {
-        this.#cache.config.onError?.(
+        (_b2 = (_a2 = __privateGet(this, _cache).config).onError) == null ? void 0 : _b2.call(
+          _a2,
           error,
           this
         );
-        this.#cache.config.onSettled?.(
+        (_d = (_c2 = __privateGet(this, _cache).config).onSettled) == null ? void 0 : _d.call(
+          _c2,
           this.state.data,
           error,
           this
@@ -225,11 +242,12 @@ var Query = class extends Removable {
       }
       this.scheduleGc();
     };
-    this.#retryer = createRetryer({
-      initialPromise: fetchOptions?.initialPromise,
+    __privateSet(this, _retryer, createRetryer({
+      initialPromise: fetchOptions == null ? void 0 : fetchOptions.initialPromise,
       fn: context.fetchFn,
       abort: abortController.abort.bind(abortController),
       onSuccess: (data) => {
+        var _a2, _b2, _c2, _d;
         if (data === void 0) {
           if (process.env.NODE_ENV !== "production") {
             console.error(
@@ -245,8 +263,9 @@ var Query = class extends Removable {
           onError(error);
           return;
         }
-        this.#cache.config.onSuccess?.(data, this);
-        this.#cache.config.onSettled?.(
+        (_b2 = (_a2 = __privateGet(this, _cache).config).onSuccess) == null ? void 0 : _b2.call(_a2, data, this);
+        (_d = (_c2 = __privateGet(this, _cache).config).onSettled) == null ? void 0 : _d.call(
+          _c2,
           data,
           this.state.error,
           this
@@ -255,96 +274,103 @@ var Query = class extends Removable {
       },
       onError,
       onFail: (failureCount, error) => {
-        this.#dispatch({ type: "failed", failureCount, error });
+        __privateMethod(this, _dispatch, dispatch_fn).call(this, { type: "failed", failureCount, error });
       },
       onPause: () => {
-        this.#dispatch({ type: "pause" });
+        __privateMethod(this, _dispatch, dispatch_fn).call(this, { type: "pause" });
       },
       onContinue: () => {
-        this.#dispatch({ type: "continue" });
+        __privateMethod(this, _dispatch, dispatch_fn).call(this, { type: "continue" });
       },
       retry: context.options.retry,
       retryDelay: context.options.retryDelay,
       networkMode: context.options.networkMode,
       canRun: () => true
-    });
-    return this.#retryer.start();
+    }));
+    return __privateGet(this, _retryer).start();
   }
-  #dispatch(action) {
-    const reducer = (state) => {
-      switch (action.type) {
-        case "failed":
-          return {
-            ...state,
-            fetchFailureCount: action.failureCount,
-            fetchFailureReason: action.error
-          };
-        case "pause":
-          return {
-            ...state,
-            fetchStatus: "paused"
-          };
-        case "continue":
-          return {
-            ...state,
-            fetchStatus: "fetching"
-          };
-        case "fetch":
-          return {
-            ...state,
-            ...fetchState(state.data, this.options),
-            fetchMeta: action.meta ?? null
-          };
-        case "success":
-          return {
-            ...state,
-            data: action.data,
-            dataUpdateCount: state.dataUpdateCount + 1,
-            dataUpdatedAt: action.dataUpdatedAt ?? Date.now(),
-            error: null,
-            isInvalidated: false,
-            status: "success",
-            ...!action.manual && {
-              fetchStatus: "idle",
-              fetchFailureCount: 0,
-              fetchFailureReason: null
-            }
-          };
-        case "error":
-          const error = action.error;
-          if (isCancelledError(error) && error.revert && this.#revertState) {
-            return { ...this.#revertState, fetchStatus: "idle" };
-          }
-          return {
-            ...state,
-            error,
-            errorUpdateCount: state.errorUpdateCount + 1,
-            errorUpdatedAt: Date.now(),
-            fetchFailureCount: state.fetchFailureCount + 1,
-            fetchFailureReason: error,
+};
+_initialState = new WeakMap();
+_revertState = new WeakMap();
+_cache = new WeakMap();
+_retryer = new WeakMap();
+_defaultOptions = new WeakMap();
+_abortSignalConsumed = new WeakMap();
+_dispatch = new WeakSet();
+dispatch_fn = function(action) {
+  const reducer = (state) => {
+    switch (action.type) {
+      case "failed":
+        return {
+          ...state,
+          fetchFailureCount: action.failureCount,
+          fetchFailureReason: action.error
+        };
+      case "pause":
+        return {
+          ...state,
+          fetchStatus: "paused"
+        };
+      case "continue":
+        return {
+          ...state,
+          fetchStatus: "fetching"
+        };
+      case "fetch":
+        return {
+          ...state,
+          ...fetchState(state.data, this.options),
+          fetchMeta: action.meta ?? null
+        };
+      case "success":
+        return {
+          ...state,
+          data: action.data,
+          dataUpdateCount: state.dataUpdateCount + 1,
+          dataUpdatedAt: action.dataUpdatedAt ?? Date.now(),
+          error: null,
+          isInvalidated: false,
+          status: "success",
+          ...!action.manual && {
             fetchStatus: "idle",
-            status: "error"
-          };
-        case "invalidate":
-          return {
-            ...state,
-            isInvalidated: true
-          };
-        case "setState":
-          return {
-            ...state,
-            ...action.state
-          };
-      }
-    };
-    this.state = reducer(this.state);
-    notifyManager.batch(() => {
-      this.observers.forEach((observer) => {
-        observer.onQueryUpdate();
-      });
-      this.#cache.notify({ query: this, type: "updated", action });
+            fetchFailureCount: 0,
+            fetchFailureReason: null
+          }
+        };
+      case "error":
+        const error = action.error;
+        if (isCancelledError(error) && error.revert && __privateGet(this, _revertState)) {
+          return { ...__privateGet(this, _revertState), fetchStatus: "idle" };
+        }
+        return {
+          ...state,
+          error,
+          errorUpdateCount: state.errorUpdateCount + 1,
+          errorUpdatedAt: Date.now(),
+          fetchFailureCount: state.fetchFailureCount + 1,
+          fetchFailureReason: error,
+          fetchStatus: "idle",
+          status: "error"
+        };
+      case "invalidate":
+        return {
+          ...state,
+          isInvalidated: true
+        };
+      case "setState":
+        return {
+          ...state,
+          ...action.state
+        };
+    }
+  };
+  this.state = reducer(this.state);
+  notifyManager.batch(() => {
+    this.observers.forEach((observer) => {
+      observer.onQueryUpdate();
     });
-  }
+    __privateGet(this, _cache).notify({ query: this, type: "updated", action });
+  });
 };
 function fetchState(data, options) {
   return {
