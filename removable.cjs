@@ -16,24 +16,6 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var __accessCheck = (obj, member, msg) => {
-  if (!member.has(obj))
-    throw TypeError("Cannot " + msg);
-};
-var __privateGet = (obj, member, getter) => {
-  __accessCheck(obj, member, "read from private field");
-  return getter ? getter.call(obj) : member.get(obj);
-};
-var __privateAdd = (obj, member, value) => {
-  if (member.has(obj))
-    throw TypeError("Cannot add the same private member more than once");
-  member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
-};
-var __privateSet = (obj, member, value, setter) => {
-  __accessCheck(obj, member, "write to private field");
-  setter ? setter.call(obj, value) : member.set(obj, value);
-  return value;
-};
 
 // src/removable.ts
 var removable_exports = {};
@@ -42,20 +24,17 @@ __export(removable_exports, {
 });
 module.exports = __toCommonJS(removable_exports);
 var import_utils = require("./utils.cjs");
-var _gcTimeout;
 var Removable = class {
-  constructor() {
-    __privateAdd(this, _gcTimeout, void 0);
-  }
+  #gcTimeout;
   destroy() {
     this.clearGcTimeout();
   }
   scheduleGc() {
     this.clearGcTimeout();
     if ((0, import_utils.isValidTimeout)(this.gcTime)) {
-      __privateSet(this, _gcTimeout, setTimeout(() => {
+      this.#gcTimeout = setTimeout(() => {
         this.optionalRemove();
-      }, this.gcTime));
+      }, this.gcTime);
     }
   }
   updateGcTime(newGcTime) {
@@ -65,13 +44,12 @@ var Removable = class {
     );
   }
   clearGcTimeout() {
-    if (__privateGet(this, _gcTimeout)) {
-      clearTimeout(__privateGet(this, _gcTimeout));
-      __privateSet(this, _gcTimeout, void 0);
+    if (this.#gcTimeout) {
+      clearTimeout(this.#gcTimeout);
+      this.#gcTimeout = void 0;
     }
   }
 };
-_gcTimeout = new WeakMap();
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   Removable
